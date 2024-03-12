@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SyntaxEdit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SearchOptions>EntireScope FindTextAtCursor FindSelectedText CycledSearch</SearchOptions>
+  <BorderStyle>None</BorderStyle>
+  <Pages>
+    <DefaultPage>
+      <Header>
+        <Offset>
+          <X>0</X>
+          <Y>0</Y>
+        </Offset>
+      </Header>
+      <Footer>
+        <Offset>
+          <X>0</X>
+          <Y>0</Y>
+        </Offset>
+      </Footer>
+      <PageSize>
+        <Width>0</Width>
+        <Height>0</Height>
+      </PageSize>
+    </DefaultPage>
+  </Pages>
+  <DisplayStrings />
+  <Selection>
+    <SelectionRect>
+      <Location>
+        <X>0</X>
+        <Y>232</Y>
+      </Location>
+      <Size>
+        <Width>24</Width>
+        <Height>3</Height>
+      </Size>
+      <X>0</X>
+      <Y>232</Y>
+      <Width>24</Width>
+      <Height>3</Height>
+    </SelectionRect>
+    <Options>UseColors OverwriteBlocks SelectLineOnTripleClick CopyLineWhenEmpty SelectWordOnCtrlClick</Options>
+  </Selection>
+  <Gutter>
+    <LineNumbersForeColor>WindowText</LineNumbersForeColor>
+    <Options>PaintLineNumbers PaintBookMarks PaintLineModificators</Options>
+  </Gutter>
+  <Margin>
+    <Visible>false</Visible>
+  </Margin>
+  <LineStyles />
+  <LineSeparator />
+  <Printing>
+    <Footer>
+      <Offset>
+        <X>0</X>
+        <Y>0</Y>
+      </Offset>
+    </Footer>
+    <Header>
+      <Offset>
+        <X>0</X>
+        <Y>0</Y>
+      </Offset>
+    </Header>
+  </Printing>
+  <WhiteSpace />
+  <TextSource>
+    <Position>
+      <X>0</X>
+      <Y>232</Y>
+    </Position>
+    <Lexer>
+      <Scheme>
+        <Author>Quantum Whale, LLC.</Author>
+        <Copyright>Copyright (c) 2004 - 2014 Quantum Whale LLC.</Copyright>
+        <FileType>gas</FileType>
+        <Version>1.5</Version>
+        <Styles>
+          <Style>
+            <Name>idents</Name>
+            <ForeColor>ControlText</ForeColor>
+          </Style>
+          <Style>
+            <Name>numbers</Name>
+            <ForeColor>ControlText</ForeColor>
+          </Style>
+          <Style>
+            <Name>reswords</Name>
+            <ForeColor>Blue</ForeColor>
+          </Style>
+          <Style>
+            <Name>comments</Name>
+            <ForeColor>Green</ForeColor>
+            <PlainText>true</PlainText>
+          </Style>
+          <Style>
+            <Name>xmlcomments</Name>
+            <ForeColor>Gray</ForeColor>
+          </Style>
+          <Style>
+            <Name>symbols</Name>
+            <ForeColor>WindowText</ForeColor>
+          </Style>
+          <Style>
+            <Name>whitespace</Name>
+            <ForeColor>WindowText</ForeColor>
+          </Style>
+          <Style>
+            <Name>strings</Name>
+            <ForeColor>Maroon</ForeColor>
+            <PlainText>true</PlainText>
+          </Style>
+          <Style>
+            <Name>directives</Name>
+            <ForeColor>Blue</ForeColor>
+          </Style>
+          <Style>
+            <Name>htmlparams</Name>
+            <ForeColor>Red</ForeColor>
+          </Style>
+          <Style>
+            <Name>syntax errors</Name>
+            <ForeColor>Red</ForeColor>
+          </Style>
+          <Style>
+            <Name>codes nippets</Name>
+            <ForeColor>Black</ForeColor>
+            <BackColor>255:180:228:180</BackColor>
+          </Style>
+          <Style>
+            <Name>GabReservedWords</Name>
+            <ForeColor>Blue</ForeColor>
+          </Style>
+          <Style>
+            <Name>GabTokenWithBrackets</Name>
+            <ForeColor>Gray</ForeColor>
+          </Style>
+          <Style>
+            <Name>GabFunctionIntrinsicDebug</Name>
+            <ForeColor>White</ForeColor>
+            <BackColor>Red</BackColor>
+            <FontStyle>Bold</FontStyle>
+            <PlainText>true</PlainText>
+          </Style>
+          <Style>
+            <Name>GabVariable</Name>
+            <ForeColor>Teal</ForeColor>
+          </Style>
+          <Style>
+            <Name>GabVariableSystemDefined</Name>
+            <ForeColor>Teal</ForeColor>
+            <FontStyle>Bold Italic</FontStyle>
+          </Style>
+          <Style>
+            <Name>GabGui</Name>
+            <ForeColor>OrangeRed</ForeColor>
+          </Style>
+          <Style>
+            <Name>GabProgramSubStartEnd</Name>
+            <ForeColor>Black</ForeColor>
+            <BackColor>LightGray</BackColor>
+            <FontStyle>Bold</FontStyle>
+            <PlainText>true</PlainText>
+          </Style>
+        </Styles>
+      </Scheme>
+    </Lexer>
+    <TextStrings>
+      <Lines>
+        <string>Program.Sub.ScreenSU.Start</string>
+        <string>Gui.F_Tower..Create</string>
+        <string>Gui.F_Tower..Caption("Tower BIN")</string>
+        <string>Gui.F_Tower..Size(3210,5955)</string>
+        <string>Gui.F_Tower..MinX(0)</string>
+        <string>Gui.F_Tower..MinY(0)</string>
+        <string>Gui.F_Tower..Position(0,0)</string>
+        <string>Gui.F_Tower..BackColor(-2147483633)</string>
+        <string>Gui.F_Tower..MousePointer(0)</string>
+        <string>Gui.F_Tower..Event(UnLoad,F_Tower_UnLoad)</string>
+        <string>Gui.F_Tower.lbl1.Create(Label,"Bin",True,450,255,0,180,225,True,0,"Arial",8,-986896,0)</string>
+        <string>Gui.F_Tower.txtBin.Create(TextBox,"",True,1215,300,0,210,420,True,0,"Arial",8,-2147483643,1)</string>
+        <string>Gui.F_Tower.txtBin.MaxLength(6)</string>
+        <string>Gui.F_Tower.cmdBrowse.Create(Button)</string>
+        <string>Gui.F_Tower.cmdBrowse.Size(450,375)</string>
+        <string>Gui.F_Tower.cmdBrowse.Position(1545,375)</string>
+        <string>Gui.F_Tower.cmdBrowse.Caption("^")</string>
+        <string>Gui.F_Tower.cmdBrowse.Event(Click,cmdBrowse_Click)</string>
+        <string>Gui.F_Tower.GsGridControl1.Create(GsGridControl)</string>
+        <string>Gui.F_Tower.GsGridControl1.Size(1605,3480)</string>
+        <string>Gui.F_Tower.GsGridControl1.Position(210,1275)</string>
+        <string>Gui.F_Tower.cmdAdd.Create(Button)</string>
+        <string>Gui.F_Tower.cmdAdd.Size(855,375)</string>
+        <string>Gui.F_Tower.cmdAdd.Position(210,825)</string>
+        <string>Gui.F_Tower.cmdAdd.Caption("Add")</string>
+        <string>Gui.F_Tower.cmdAdd.Event(Click,cmdAdd_Click)</string>
+        <string>Gui.F_Tower.cmdDelete.Create(Button)</string>
+        <string>Gui.F_Tower.cmdDelete.Size(855,375)</string>
+        <string>Gui.F_Tower.cmdDelete.Position(1215,825)</string>
+        <string>Gui.F_Tower.cmdDelete.Caption("Delete")</string>
+        <string>Gui.F_Tower.cmdDelete.Event(Click,cmdDelete_Click)</string>
+        <string>Gui.F_Tower.cmdSave.Create(Button)</string>
+        <string>Gui.F_Tower.cmdSave.Size(855,375)</string>
+        <string>Gui.F_Tower.cmdSave.Position(210,4875)</string>
+        <string>Gui.F_Tower.cmdSave.Caption("Save")</string>
+        <string>Gui.F_Tower.cmdSave.Event(Click,cmdSave_Click)</string>
+        <string>Program.Sub.ScreenSU.End</string>
+        <string />
+        <string>Program.Sub.Preflight.Start</string>
+        <string>Program.Sub.Preflight.End</string>
+        <string />
+        <string>Program.Sub.Main.Start</string>
+        <string>F.Intrinsic.Control.SetErrorHandler("Main_Err")</string>
+        <string>F.Intrinsic.Control.ClearErrors</string>
+        <string />
+        <string>V.Local.sError.Declare(String)</string>
+        <string />
+        <string>F.ODBC.Connection!con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)</string>
+        <string>'Create the datatable if there are any Bins already ssociated as Tower Bins</string>
+        <string>F.Data.DataTable.CreateFromSQL("Tower","con","SELECT * FROM GCG_4226_TOWER_BIN",True)</string>
+        <string>'Create the dataview for the grid</string>
+        <string>F.Data.DataView.Create("Tower","Tower_View",22,"","")</string>
+        <string>'Add to GridControl</string>
+        <string>Gui.F_Tower.GsGridControl1.AddGridViewFromDataView("Grid_Tower","Tower","Tower_View")</string>
+        <string>'Set MainView</string>
+        <string>Gui.F_Tower.GsGridControl1.MainView("Grid_Tower")</string>
+        <string>'Show screen</string>
+        <string>Gui.F_Tower..Show</string>
+        <string />
+        <string>F.Intrinsic.Control.ExitSub</string>
+        <string />
+        <string>F.Intrinsic.Control.Label("Main_Err")</string>
+        <string>F.Intrinsic.Control.If(V.Ambient.ErrorNumber,&lt;&gt;,0)</string>
+        <string>	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)</string>
+        <string>	F.Intrinsic.UI.Msgbox(V.Local.sError)</string>
+        <string>Function.Intrinsic.Control.EndIf</string>
+        <string>Program.Sub.Main.End</string>
+        <string />
+        <string>Program.Sub.cmdSave_Click.Start</string>
+        <string>F.Intrinsic.Control.SetErrorHandler("cmdSave_Click_Err")</string>
+        <string>F.Intrinsic.Control.ClearErrors</string>
+        <string />
+        <string>V.Local.sError.Declare(String)</string>
+        <string />
+        <string>'Save to database. mode 7 updates all records</string>
+        <string>F.Data.DataTable.SaveToDB("Tower","con","GCG_4226_TOWER_BIN","BIN",7)</string>
+        <string />
+        <string>F.Intrinsic.Control.ExitSub</string>
+        <string />
+        <string>F.Intrinsic.Control.Label("cmdSave_Click_Err")</string>
+        <string>F.Intrinsic.Control.If(V.Ambient.ErrorNumber,&lt;&gt;,0)</string>
+        <string>	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)</string>
+        <string>	F.Intrinsic.UI.Msgbox(V.Local.sError)</string>
+        <string>	F.Intrinsic.Control.CallSub(f_tower_unload)</string>
+        <string>Function.Intrinsic.Control.EndIf</string>
+        <string>Program.Sub.cmdSave_Click.End</string>
+        <string />
+        <string>Program.Sub.cmdDelete_Click.Start</string>
+        <string>F.Intrinsic.Control.SetErrorHandler("cmdDelete_Click_Err")</string>
+        <string>F.Intrinsic.Control.ClearErrors</string>
+        <string />
+        <string>V.Local.sError.Declare(String)</string>
+        <string>V.Local.sRow.Declare(String)</string>
+        <string>V.Local.iRow.Declare(Long)</string>
+        <string>V.Local.iC.Declare(Long)</string>
+        <string />
+        <string>'Get the selected rows in the Grid</string>
+        <string>Gui.F_Tower.GsGridControl1.GetSelectedRowsInFocus(V.Local.sRow)</string>
+        <string />
+        <string>F.Intrinsic.Control.If(V.Local.sRow,&lt;&gt;,"")</string>
+        <string>	F.Intrinsic.String.Split(V.Local.sRow,"*!*",V.Local.sRow)</string>
+        <string>	'if there is a row selected, loop through them and remove each one.</string>
+        <string>	F.Intrinsic.Control.For(V.Local.iC,0,V.Local.sRow.UBound,1)</string>
+        <string>		V.Local.iRow.Set(V.Local.sRow(V.Local.iC))</string>
+        <string>		F.Data.DataTable.DeleteRow("Tower",V.Local.iRow)</string>
+        <string>	F.Intrinsic.Control.Next(V.Local.iC)</string>
+        <string>F.Intrinsic.Control.EndIf</string>
+        <string />
+        <string>F.Intrinsic.Control.ExitSub</string>
+        <string />
+        <string>F.Intrinsic.Control.Label("cmdDelete_Click_Err")</string>
+        <string>F.Intrinsic.Control.If(V.Ambient.ErrorNumber,&lt;&gt;,0)</string>
+        <string>	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)</string>
+        <string>	F.Intrinsic.UI.Msgbox(V.Local.sError)</string>
+        <string>	F.Intrinsic.Control.CallSub(f_tower_unload)</string>
+        <string>Function.Intrinsic.Control.EndIf</string>
+        <string>Program.Sub.cmdDelete_Click.End</string>
+        <string />
+        <string>Program.Sub.cmdAdd_Click.Start</string>
+        <string>F.Intrinsic.Control.SetErrorHandler("cmdAdd_Click_Err")</string>
+        <string>F.Intrinsic.Control.ClearErrors</string>
+        <string />
+        <string>V.Local.sError.Declare(String)</string>
+        <string>V.Local.sSQL.Declare(String)</string>
+        <string />
+        <string>'Check if Bin is already in table</string>
+        <string>F.Intrinsic.Control.CallSub(check_bin,"Bin",V.Screen.F_Tower!txtBin.Text)</string>
+        <string />
+        <string>F.Intrinsic.Control.If(V.Screen.F_Tower!txtBin.Text,&lt;&gt;,"")</string>
+        <string>	'Check to make sure it is a valid BIN</string>
+        <string>	F.Intrinsic.String.Build("SELECT * FROM BIN_MASTER WHERE BIN = '{0}'",V.Screen.F_Tower!txtBin.Text,V.Local.sSQL)</string>
+        <string>	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstBin",V.Local.sSQL)</string>
+        <string />
+        <string>	F.Intrinsic.Control.If(V.ODBC.con!rstBin.EOF,&lt;&gt;,True)</string>
+        <string>		Gui.F_Tower.GsGridControl1.AddRow("Grid_Tower",V.Screen.F_Tower!txtBin.Text.Trim)</string>
+        <string>		Gui.F_Tower.txtBin.Text("")</string>
+        <string>	F.Intrinsic.Control.Else</string>
+        <string>		F.Intrinsic.UI.Msgbox("Not a valid Bin within Global Shop.")</string>
+        <string>		Gui.F_Tower.txtBin.Text("")</string>
+        <string>	F.Intrinsic.Control.EndIf</string>
+        <string>F.Intrinsic.Control.EndIf</string>
+        <string />
+        <string>F.Intrinsic.Control.ExitSub</string>
+        <string />
+        <string>F.Intrinsic.Control.Label("cmdAdd_Click_Err")</string>
+        <string>F.Intrinsic.Control.If(V.Ambient.ErrorNumber,&lt;&gt;,0)</string>
+        <string>	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)</string>
+        <string>	F.Intrinsic.UI.Msgbox(V.Local.sError)</string>
+        <string>	F.Intrinsic.Control.CallSub(f_tower_unload)</string>
+        <string>Function.Intrinsic.Control.EndIf</string>
+        <string>Program.Sub.cmdAdd_Click.End</string>
+        <string />
+        <string>Program.Sub.cmdBrowse_Click.Start</string>
+        <string>F.Intrinsic.Control.SetErrorHandler("cmdBrowse_Click_Err")</string>
+        <string>F.Intrinsic.Control.ClearErrors</string>
+        <string />
+        <string>V.Local.sError.Declare(String)</string>
+        <string>V.Local.sRet.Declare(String)</string>
+        <string />
+        <string>'Standard BIN Browser</string>
+        <string>F.Intrinsic.UI.Browser(150,"",V.Local.sRet)</string>
+        <string />
+        <string>F.Intrinsic.Control.If(V.Local.sRet,&lt;&gt;,"***CANCEL***")</string>
+        <string>	'Split the return</string>
+        <string>	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.Local.sRet)</string>
+        <string>	'Check to see if the BIN is already in the Table</string>
+        <string>	F.Intrinsic.Control.CallSub(Check_Bin,"Bin",V.Local.sRet(0).Trim)</string>
+        <string>F.Intrinsic.Control.EndIf</string>
+        <string />
+        <string>F.Intrinsic.Control.ExitSub</string>
+        <string />
+        <string>F.Intrinsic.Control.Label("cmdBrowse_Click_Err")</string>
+        <string>F.Intrinsic.Control.If(V.Ambient.ErrorNumber,&lt;&gt;,0)</string>
+        <string>	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)</string>
+        <string>	F.Intrinsic.UI.Msgbox(V.Local.sError)</string>
+        <string>	F.Intrinsic.Control.CallSub(f_tower_unload)</string>
+        <string>Function.Intrinsic.Control.EndIf</string>
+        <string>Program.Sub.cmdBrowse_Click.End</string>
+        <string />
+        <string>Program.Sub.Check_Bin.Start</string>
+        <string>F.Intrinsic.Control.SetErrorHandler("Check_Bin_Err")</string>
+        <string>F.Intrinsic.Control.ClearErrors</string>
+        <string />
+        <string>V.Local.sError.Declare(String)</string>
+        <string>V.Local.sFilter.Declare(String)</string>
+        <string />
+        <string>'Build Filter String</string>
+        <string>F.Intrinsic.String.Build("BIN='{0}'",V.Args.Bin,V.Local.sFilter)</string>
+        <string>'Create new dataview based on filter</string>
+        <string>F.Data.DataView.Create("Tower","Bin_Exist",22,V.Local.sFilter,"")</string>
+        <string />
+        <string>'Check row count, if it's 0 then it isnt' in the table</string>
+        <string>F.Intrinsic.Control.If(V.DataView.Tower!Bin_Exist.RowCount,=,0)</string>
+        <string>	Gui.F_Tower.txtBin.Text(V.Args.Bin.Trim)</string>
+        <string>F.Intrinsic.Control.Else</string>
+        <string>	F.Intrinsic.UI.Msgbox("Bin is already in table.")</string>
+        <string>	Gui.F_Tower.txtBin.Text("")</string>
+        <string>F.Intrinsic.Control.EndIf</string>
+        <string />
+        <string>'Close the dataview since we don't need it anymore</string>
+        <string>F.Data.DataView.Close("Tower","Bin_Exist")</string>
+        <string />
+        <string>F.Intrinsic.Control.ExitSub</string>
+        <string />
+        <string>F.Intrinsic.Control.Label("Check_Bin_Err")</string>
+        <string>F.Intrinsic.Control.If(V.Ambient.ErrorNumber,&lt;&gt;,0)</string>
+        <string>	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)</string>
+        <string>	F.Intrinsic.UI.Msgbox(V.Local.sError)</string>
+        <string>	F.Intrinsic.Control.CallSub(f_tower_unload)</string>
+        <string>Function.Intrinsic.Control.EndIf</string>
+        <string>Program.Sub.Check_Bin.End</string>
+        <string />
+        <string>Program.Sub.F_Tower_UnLoad.Start</string>
+        <string>F.Intrinsic.Control.SetErrorHandler("F_Tower_UnLoad_Err")</string>
+        <string>F.Intrinsic.Control.ClearErrors</string>
+        <string />
+        <string>V.Local.sError.Declare(String)</string>
+        <string />
+        <string>F.ODBC.Connection!con.Close</string>
+        <string>F.Intrinsic.Control.End</string>
+        <string />
+        <string>F.Intrinsic.Control.ExitSub</string>
+        <string />
+        <string>F.Intrinsic.Control.Label("F_Tower_UnLoad_Err")</string>
+        <string>F.Intrinsic.Control.If(V.Ambient.ErrorNumber,&lt;&gt;,0)</string>
+        <string>	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)</string>
+        <string>	F.Intrinsic.UI.Msgbox(V.Local.sError)</string>
+        <string>	F.Intrinsic.Control.End</string>
+        <string />
+        <string>Function.Intrinsic.Control.EndIf</string>
+        <string>Program.Sub.F_Tower_UnLoad.End</string>
+        <string />
+        <string>Program.Sub.Comments.Start</string>
+        <string>${$0$}$Issue Tower Parts$}$BCC$}$9/26/2016 6:20:58 PM$}$False</string>
+        <string>${$3$}$0$}$$}$0$}$-1$}$$}$12:00:00 AM$}$This custom project will allow the user to issue material to jobs based on an exported comma delimited text file from a MyData machine. They user will have the option of either issuing all the material in the document, or only those Tower Parts. The issue material screen will also be updated such that the Issue All button will be disabled, and in it's place a new issue all button, along with an Issue All Non Tower Parts Button.</string>
+        <string>Program.Sub.Comments.End</string>
+      </Lines>
+    </TextStrings>
+  </TextSource>
+  <Scrolling>
+    <WindowOriginY>142</WindowOriginY>
+    <Options>None</Options>
+  </Scrolling>
+  <Outlining>
+    <AllowOutlining>true</AllowOutlining>
+    <ImageSize>8</ImageSize>
+    <Ranges>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>0</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>36</Y>
+        </EndPoint>
+        <Text>Program.Sub.ScreenSU</Text>
+        <DisplayText>Program.Sub.ScreenSU</DisplayText>
+        <Visible>false</Visible>
+        <Level>0</Level>
+      </Range>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>38</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>39</Y>
+        </EndPoint>
+        <Text>Program.Sub.Preflight</Text>
+        <DisplayText>Program.Sub.Preflight</DisplayText>
+        <Visible>false</Visible>
+        <Level>0</Level>
+      </Range>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>41</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>66</Y>
+        </EndPoint>
+        <Text>Program.Sub.Main</Text>
+        <DisplayText>Program.Sub.Main</DisplayText>
+        <Visible>true</Visible>
+        <Level>0</Level>
+      </Range>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>68</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>85</Y>
+        </EndPoint>
+        <Text>Program.Sub.cmdSave_Click</Text>
+        <DisplayText>Program.Sub.cmdSave_Click</DisplayText>
+        <Visible>true</Visible>
+        <Level>0</Level>
+      </Range>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>87</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>116</Y>
+        </EndPoint>
+        <Text>Program.Sub.cmdDelete_Click</Text>
+        <DisplayText>Program.Sub.cmdDelete_Click</DisplayText>
+        <Visible>true</Visible>
+        <Level>0</Level>
+      </Range>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>118</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>150</Y>
+        </EndPoint>
+        <Text>Program.Sub.cmdAdd_Click</Text>
+        <DisplayText>Program.Sub.cmdAdd_Click</DisplayText>
+        <Visible>true</Visible>
+        <Level>0</Level>
+      </Range>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>152</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>177</Y>
+        </EndPoint>
+        <Text>Program.Sub.cmdBrowse_Click</Text>
+        <DisplayText>Program.Sub.cmdBrowse_Click</DisplayText>
+        <Visible>true</Visible>
+        <Level>0</Level>
+      </Range>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>179</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>210</Y>
+        </EndPoint>
+        <Text>Program.Sub.Check_Bin</Text>
+        <DisplayText>Program.Sub.Check_Bin</DisplayText>
+        <Visible>true</Visible>
+        <Level>0</Level>
+      </Range>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>212</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>230</Y>
+        </EndPoint>
+        <Text>Program.Sub.F_Tower_UnLoad</Text>
+        <DisplayText>Program.Sub.F_Tower_UnLoad</DisplayText>
+        <Visible>true</Visible>
+        <Level>0</Level>
+      </Range>
+      <Range>
+        <StartPoint>
+          <X>0</X>
+          <Y>232</Y>
+        </StartPoint>
+        <EndPoint>
+          <X>2147483647</X>
+          <Y>235</Y>
+        </EndPoint>
+        <Text>Program.Sub.Comments</Text>
+        <DisplayText>Program.Sub.Comments</DisplayText>
+        <Visible>false</Visible>
+        <Level>0</Level>
+      </Range>
+    </Ranges>
+  </Outlining>
+  <HyperText />
+  <Spelling />
+  <Braces />
+</SyntaxEdit>
