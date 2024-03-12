@@ -1,0 +1,236 @@
+Program.Sub.ScreenSU.Start
+Gui.F_Tower..Create
+Gui.F_Tower..Caption("Tower BIN")
+Gui.F_Tower..Size(3210,5955)
+Gui.F_Tower..MinX(0)
+Gui.F_Tower..MinY(0)
+Gui.F_Tower..Position(0,0)
+Gui.F_Tower..BackColor(-2147483633)
+Gui.F_Tower..MousePointer(0)
+Gui.F_Tower..Event(UnLoad,F_Tower_UnLoad)
+Gui.F_Tower.lbl1.Create(Label,"Bin",True,450,255,0,180,225,True,0,"Arial",8,-986896,0)
+Gui.F_Tower.txtBin.Create(TextBox,"",True,1215,300,0,210,420,True,0,"Arial",8,-2147483643,1)
+Gui.F_Tower.txtBin.MaxLength(6)
+Gui.F_Tower.cmdBrowse.Create(Button)
+Gui.F_Tower.cmdBrowse.Size(450,375)
+Gui.F_Tower.cmdBrowse.Position(1545,375)
+Gui.F_Tower.cmdBrowse.Caption("^")
+Gui.F_Tower.cmdBrowse.Event(Click,cmdBrowse_Click)
+Gui.F_Tower.GsGridControl1.Create(GsGridControl)
+Gui.F_Tower.GsGridControl1.Size(1605,3480)
+Gui.F_Tower.GsGridControl1.Position(210,1275)
+Gui.F_Tower.cmdAdd.Create(Button)
+Gui.F_Tower.cmdAdd.Size(855,375)
+Gui.F_Tower.cmdAdd.Position(210,825)
+Gui.F_Tower.cmdAdd.Caption("Add")
+Gui.F_Tower.cmdAdd.Event(Click,cmdAdd_Click)
+Gui.F_Tower.cmdDelete.Create(Button)
+Gui.F_Tower.cmdDelete.Size(855,375)
+Gui.F_Tower.cmdDelete.Position(1215,825)
+Gui.F_Tower.cmdDelete.Caption("Delete")
+Gui.F_Tower.cmdDelete.Event(Click,cmdDelete_Click)
+Gui.F_Tower.cmdSave.Create(Button)
+Gui.F_Tower.cmdSave.Size(855,375)
+Gui.F_Tower.cmdSave.Position(210,4875)
+Gui.F_Tower.cmdSave.Caption("Save")
+Gui.F_Tower.cmdSave.Event(Click,cmdSave_Click)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+F.ODBC.Connection!con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+'Create the datatable if there are any Bins already ssociated as Tower Bins
+F.Data.DataTable.CreateFromSQL("Tower","con","SELECT * FROM GCG_4226_TOWER_BIN",True)
+'Create the dataview for the grid
+F.Data.DataView.Create("Tower","Tower_View",22,"","")
+'Add to GridControl
+Gui.F_Tower.GsGridControl1.AddGridViewFromDataView("Grid_Tower","Tower","Tower_View")
+'Set MainView
+Gui.F_Tower.GsGridControl1.MainView("Grid_Tower")
+'Show screen
+Gui.F_Tower..Show
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+Program.Sub.Main.End
+
+Program.Sub.cmdSave_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdSave_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'Save to database. mode 7 updates all records
+F.Data.DataTable.SaveToDB("Tower","con","GCG_4226_TOWER_BIN","BIN",7)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdSave_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_tower_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdSave_Click.End
+
+Program.Sub.cmdDelete_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdDelete_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sRow.Declare(String)
+V.Local.iRow.Declare(Long)
+V.Local.iC.Declare(Long)
+
+'Get the selected rows in the Grid
+Gui.F_Tower.GsGridControl1.GetSelectedRowsInFocus(V.Local.sRow)
+
+F.Intrinsic.Control.If(V.Local.sRow,<>,"")
+	F.Intrinsic.String.Split(V.Local.sRow,"*!*",V.Local.sRow)
+	'if there is a row selected, loop through them and remove each one.
+	F.Intrinsic.Control.For(V.Local.iC,0,V.Local.sRow.UBound,1)
+		V.Local.iRow.Set(V.Local.sRow(V.Local.iC))
+		F.Data.DataTable.DeleteRow("Tower",V.Local.iRow)
+	F.Intrinsic.Control.Next(V.Local.iC)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdDelete_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_tower_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdDelete_Click.End
+
+Program.Sub.cmdAdd_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdAdd_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sSQL.Declare(String)
+
+'Check if Bin is already in table
+F.Intrinsic.Control.CallSub(check_bin,"Bin",V.Screen.F_Tower!txtBin.Text)
+
+F.Intrinsic.Control.If(V.Screen.F_Tower!txtBin.Text,<>,"")
+	'Check to make sure it is a valid BIN
+	F.Intrinsic.String.Build("SELECT * FROM BIN_MASTER WHERE BIN = '{0}'",V.Screen.F_Tower!txtBin.Text,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstBin",V.Local.sSQL)
+
+	F.Intrinsic.Control.If(V.ODBC.con!rstBin.EOF,<>,True)
+		Gui.F_Tower.GsGridControl1.AddRow("Grid_Tower",V.Screen.F_Tower!txtBin.Text.Trim)
+		Gui.F_Tower.txtBin.Text("")
+	F.Intrinsic.Control.Else
+		F.Intrinsic.UI.Msgbox("Not a valid Bin within Global Shop.")
+		Gui.F_Tower.txtBin.Text("")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdAdd_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_tower_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdAdd_Click.End
+
+Program.Sub.cmdBrowse_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdBrowse_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sRet.Declare(String)
+
+'Standard BIN Browser
+F.Intrinsic.UI.Browser(150,"",V.Local.sRet)
+
+F.Intrinsic.Control.If(V.Local.sRet,<>,"***CANCEL***")
+	'Split the return
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.Local.sRet)
+	'Check to see if the BIN is already in the Table
+	F.Intrinsic.Control.CallSub(Check_Bin,"Bin",V.Local.sRet(0).Trim)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdBrowse_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_tower_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdBrowse_Click.End
+
+Program.Sub.Check_Bin.Start
+F.Intrinsic.Control.SetErrorHandler("Check_Bin_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sFilter.Declare(String)
+
+'Build Filter String
+F.Intrinsic.String.Build("BIN='{0}'",V.Args.Bin,V.Local.sFilter)
+'Create new dataview based on filter
+F.Data.DataView.Create("Tower","Bin_Exist",22,V.Local.sFilter,"")
+
+'Check row count, if it's 0 then it isnt' in the table
+F.Intrinsic.Control.If(V.DataView.Tower!Bin_Exist.RowCount,=,0)
+	Gui.F_Tower.txtBin.Text(V.Args.Bin.Trim)
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox("Bin is already in table.")
+	Gui.F_Tower.txtBin.Text("")
+F.Intrinsic.Control.EndIf
+
+'Close the dataview since we don't need it anymore
+F.Data.DataView.Close("Tower","Bin_Exist")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Check_Bin_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_tower_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.Check_Bin.End
+
+Program.Sub.F_Tower_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("F_Tower_UnLoad_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+F.ODBC.Connection!con.Close
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("F_Tower_UnLoad_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Tower_Bin_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+
+Function.Intrinsic.Control.EndIf
+Program.Sub.F_Tower_UnLoad.End
+
+Program.Sub.Comments.Start
+${$0$}$Issue Tower Parts$}$BCC$}$9/26/2016 6:20:58 PM$}$False
+${$3$}$0$}$$}$0$}$-1$}$$}$12:00:00 AM$}$This custom project will allow the user to issue material to jobs based on an exported comma delimited text file from a MyData machine. They user will have the option of either issuing all the material in the document, or only those Tower Parts. The issue material screen will also be updated such that the Issue All button will be disabled, and in it's place a new issue all button, along with an Issue All Non Tower Parts Button.
+Program.Sub.Comments.End
