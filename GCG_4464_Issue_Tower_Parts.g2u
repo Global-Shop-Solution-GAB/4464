@@ -1,0 +1,824 @@
+Program.Sub.ScreenSU.Start
+Gui.F_Issue..Create
+Gui.F_Issue..Caption("Issue Materials")
+Gui.F_Issue..Size(5760,2550)
+Gui.F_Issue..MinX(0)
+Gui.F_Issue..MinY(0)
+Gui.F_Issue..Position(0,0)
+Gui.F_Issue..BackColor(-2147483633)
+Gui.F_Issue..MousePointer(0)
+Gui.F_Issue..Event(UnLoad,F_Issue_UnLoad)
+Gui.F_Issue.optMyData.Create(Option)
+Gui.F_Issue.optMyData.Size(2145,255)
+Gui.F_Issue.optMyData.Position(240,795)
+Gui.F_Issue.optMyData.Caption("MyData Machine Import")
+Gui.F_Issue.optDeKit.Create(Option)
+Gui.F_Issue.optDeKit.Size(2175,255)
+Gui.F_Issue.optDeKit.Position(240,1155)
+Gui.F_Issue.optDeKit.Caption("De-Kit Import (All Parts)")
+Gui.F_Issue.cmdIssue.Create(Button)
+Gui.F_Issue.cmdIssue.Size(855,375)
+Gui.F_Issue.cmdIssue.Position(240,1500)
+Gui.F_Issue.cmdIssue.Caption("Issue")
+Gui.F_Issue.cmdIssue.Event(Click,AreYouSureForm)
+Gui.F_Issue.txtFile.Create(TextBox,"",True,4530,300,0,240,435,True,0,"Arial",8,-2147483643,1)
+Gui.F_Issue.lblImport.Create(Label,"Issue File",True,885,255,0,195,225,True,0,"Arial",8,-986896,0)
+Gui.F_Issue.cmdBrowse.Create(Button)
+Gui.F_Issue.cmdBrowse.Size(465,375)
+Gui.F_Issue.cmdBrowse.Position(4890,390)
+Gui.F_Issue.cmdBrowse.Caption("^")
+Gui.F_Issue.cmdBrowse.Event(Click,cmdBrowse_Click)
+Gui.F_Progress..Create
+Gui.F_Progress..Caption("Issue Material Progress")
+Gui.F_Progress..Size(15360,2505)
+Gui.F_Progress..MinX(0)
+Gui.F_Progress..MinY(0)
+Gui.F_Progress..Position(0,0)
+Gui.F_Progress..BackColor(-2147483633)
+Gui.F_Progress..MousePointer(0)
+Gui.F_Progress.pgbIssue.Create(ProgressBar)
+Gui.F_Progress.pgbIssue.Size(14460,1050)
+Gui.F_Progress.pgbIssue.Position(300,450)
+Gui.FormSure..Create
+Gui.FormSure..Caption("Caution")
+Gui.FormSure..Size(3510,1800)
+Gui.FormSure..MinX(0)
+Gui.FormSure..MinY(0)
+Gui.FormSure..Position(0,0)
+Gui.FormSure..BackColor(-2147483633)
+Gui.FormSure..MousePointer(0)
+Gui.FormSure..Sizeable(False)
+Gui.FormSure.cmdYes.Create(Button)
+Gui.FormSure.cmdYes.Size(855,375)
+Gui.FormSure.cmdYes.Position(210,765)
+Gui.FormSure.cmdYes.Caption("Yes")
+Gui.FormSure.cmdYes.Event(Click,cmdYes_Click)
+Gui.FormSure.cmdNO.Create(Button)
+Gui.FormSure.cmdNO.Size(855,375)
+Gui.FormSure.cmdNO.Position(2175,780)
+Gui.FormSure.cmdNO.Caption("No")
+Gui.FormSure.cmdNO.Event(Click,cmdNO_Click)
+Gui.FormSure.lblSure.Create(Label,"Are you sure that you wish to issue Tower parts as well?",True,2760,495,0,255,255,True,0,"Arial",8,-2147483633,0)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+Variable.Global.fProgressValue.Declare(Float,0.0)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.iRet.Declare(Long)
+F.ODBC.Connection!con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+
+'Issue material populate hook
+F.Intrinsic.Control.If(V.Caller.Hook,=,28810)
+	'Disable current issue all buttons
+	F.Intrinsic.UI.ChangeCallerProperty(V.Passed.000113,"LOCK",1)
+	F.Intrinsic.UI.ChangeCallerProperty(V.Passed.000114,"LOCK",1)
+	'Update Script 1 and Script 2 captions
+	V.Passed.000260.Set("Issue All")
+	V.Passed.000261.Set("Iss Non-Tower")
+'Issue material script 1 and script 2 hook
+F.Intrinsic.Control.ElseIf(V.Caller.Hook,=,28860,"OR",V.Caller.Hook,=,28862)
+	'If Issue all is click show popup indicating if they'd like to continue.
+	F.Intrinsic.Control.If(V.Caller.Hook,=,28860)
+		F.Intrinsic.UI.Msgbox("Are you sure that you wish to issue Tower parts as well?","Issue All",4,V.Local.iRet)
+
+		F.Intrinsic.Control.If(V.Local.iRet,=,7)
+			F.Intrinsic.Control.CallSub(f_issue_unload)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+
+	'Create DataTables
+	F.Intrinsic.Control.CallSub(Load_Materials)
+F.Intrinsic.Control.Else
+	Gui.F_Issue..Show
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_issue_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.Main.End
+
+Program.Sub.cmdIssue_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdIssue_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sFileData.Declare(String)
+V.Local.iCount.Declare(Long)
+V.Local.sTempData.Declare(String)
+V.Local.sTempPart.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.iOrd.Declare(Long,0)
+V.Local.fProgPartial.Declare(Float)
+v.Local.returnvalue.Declare(long)
+
+'Check to make sure a file was selected
+F.Intrinsic.File.Exists(V.Screen.F_Issue!txtFile.Text,V.Local.bExists)
+'If no file selected prompt user and exit sub
+F.Intrinsic.Control.If(V.Local.bExists,<>,True)
+	F.Intrinsic.UI.Msgbox("You must select a file.")
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+'Check to make sure one of the radio buttons has been selected
+F.Intrinsic.Control.If(V.Screen.F_Issue!optDeKit.Value,=,False,"AND",V.Screen.F_Issue!optMyData.Value,=,False)
+	F.Intrinsic.UI.Msgbox("You must select either De-Kit or MyData type.")
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+'Read File
+F.Intrinsic.File.File2String(V.Screen.F_Issue!txtFile.Text,V.Local.sFileData)
+'Check to make sure it isn't blank
+F.Intrinsic.Control.If(V.Local.sFileData.Trim,=,"")
+	F.Intrinsic.UI.Msgbox("No data found. Exiting Program.")
+	F.Intrinsic.Control.CallSub(f_issue_unload)
+F.Intrinsic.Control.EndIf
+
+'Hide Selection Screen and show progress bar
+Gui.F_Issue..Visible(False)
+Gui.F_Progress..Show
+'Show wait dialog 
+F.Intrinsic.UI.InvokeWaitDialog("Loading File Information....")
+'Get rid of the spaces after the comma if there are any. This is messing up the values pulled in.
+F.Intrinsic.String.Replace(V.Local.sFileData,", ",",",V.Local.sFileData)
+
+'If all parts selected then we can simply load everything into the UDT, otherwise we have to loop through and remove any non-tower parts before loading
+F.Intrinsic.Control.If(V.Screen.F_Issue!optDeKit.Value,=,True)
+	'Create our datatable
+	F.Data.DataTable.CreateFromString("IssueMatTemp",V.Local.sFileData.Trim,"PartNumber*!*IssueQty*!*JobSuffix","String*!*String*!*String",",",V.Ambient.NewLine,True)
+	F.Data.DataView.Create("IssueMatTemp","IssueMatView",22,"PartNumber <> ''","")
+	F.Data.DataView.ToDataTable("IssueMatTemp","IssueMatView","IssueMat",True)
+	'Update Progress bar total
+	V.Global.fProgressValue.Set(40.0)
+	Gui.F_Progress.pgbIssue.Value(V.Global.fProgressValue)
+F.Intrinsic.Control.ElseIf(V.Screen.F_Issue!optMyData.Value,=,True)
+	F.Intrinsic.String.Split(V.Local.sFileData,V.Ambient.NewLine,V.Local.sTempData)
+	'Reset FileData to blank, in case no tower parts are found
+	V.Local.sFileData.Set("")
+	'Set the progress bar increment value
+	F.Intrinsic.Math.Div(40,V.Local.sTempData.UBound++,V.Local.fProgPartial)
+
+	'Loop through the records to see if any of the parts have tower bins
+	F.Intrinsic.Control.For(V.Local.iCount,0,V.Local.sTempData.UBound,1)
+		F.Intrinsic.Control.If(V.Local.sTempData(V.Local.iCount).Trim,<>,"")
+			F.Intrinsic.String.Split(V.Local.sTempData(V.Local.iCount),",",V.Local.sTempPart)
+			'Build SQL query to check for tower bin
+			F.Intrinsic.String.Build("SELECT M.Part FROM V_INVENTORY_MSTR M JOIN GCG_4226_TOWER_BIN G ON M.BIN = G.BIN WHERE M.Part = '{0}'",V.Local.sTempPart(0),V.Local.sSQL)
+			F.ODBC.Connection!con.OpenLocalRecordsetRO("rstBin",V.Local.sSQL)
+
+			F.Intrinsic.Control.If(V.ODBC.con!rstBin.EOF,<>,True)
+				'If this isn't a tower bin, then we need to remove it from the file
+				'Redim FileData
+				F.Intrinsic.Control.If(V.Local.iOrd,=,0)
+					V.Local.sFileData.Redim(0,V.Local.iOrd)
+				F.Intrinsic.Control.Else
+					V.Local.sFileData.RedimPreserve(0,V.Local.iOrd)
+				F.Intrinsic.Control.EndIf
+				'Set the element to the record
+				V.Local.sFileData(V.Local.iOrd).Set(V.Local.sTempData(V.Local.iCount))
+				'update the ordinal 
+				F.Intrinsic.Math.Add(V.Local.iOrd,1,V.Local.iOrd)
+			F.Intrinsic.Control.EndIf
+			'Close recordset
+			F.ODBC.con!rstBin.Close
+		F.Intrinsic.Control.EndIf
+
+		'Calculate Progress bar value
+		F.Intrinsic.Math.Add(V.Global.fProgressValue,V.Local.fProgPartial,V.Global.fProgressValue)
+		'Update progress bar
+		Gui.F_Progress.pgbIssue.Value(V.Global.fProgressValue)
+	F.Intrinsic.Control.Next(V.Local.iCount)
+
+	'Recombine the Temp Data into one string
+	F.Intrinsic.String.Join(V.Local.sFileData,V.Ambient.NewLine,V.Local.sFileData)
+
+	'Check to see if there is any data, if not inform user and close program
+	F.Intrinsic.Control.If(V.Local.sFileData.Trim,=,"")
+		F.Intrinsic.UI.Msgbox("No tower parts found. Exiting program.")
+		F.Intrinsic.Control.CallSub(f_issue_unload)
+	F.Intrinsic.Control.EndIf
+	'Now we can create our datatable
+	F.Data.DataTable.CreateFromString("IssueMat",V.Local.sFileData,"PartNumber*!*IssueQty*!*JobSuffix","String*!*String*!*String",",",V.Ambient.NewLine,True)
+F.Intrinsic.Control.EndIf
+
+'Add Bin column to the datatable
+F.Data.DataTable.AddColumn("IssueMat","Bin","String")
+'Add Job Sequence column
+F.Data.DataTable.AddColumn("IssueMat","Sequence","String")
+'Update wait dialog
+F.Intrinsic.UI.ChangeWaitStatus("Checking File For Errors....")
+'Now we need to check the file for any errors, if any exist no work will be done
+F.Intrinsic.Control.CallSub(error_check,"DeKit",V.Screen.F_Issue!optDeKit.Value)
+'Update wait dialog
+F.Intrinsic.UI.ChangeWaitStatus("Issuing Material....")
+'Now that we know there are no errors in the file, we can issue our material to the job
+F.Intrinsic.Control.CallSub(Issue_Material)
+'Close wait dialog
+F.Intrinsic.UI.CloseWaitDialog
+'Material has been issued, close the program
+F.Intrinsic.Control.CallSub(f_issue_unload)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdIssue_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_issue_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdIssue_Click.End
+
+Program.Sub.Error_Check.Start
+F.Intrinsic.Control.SetErrorHandler("Error_Check_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sErrorFile.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.sTemp.Declare(String)
+V.Local.sPart.Declare(String)
+V.Local.sJob.Declare(String)
+V.Local.sSuffix.Declare(String)
+V.Local.iCount.Declare(Long)
+V.Local.bNumeric.Declare(Boolean)
+V.Local.fProgPartial.Declare(Float)
+V.Local.iRowNum.Declare(Long)
+V.Local.fTotQuant.Declare(Float)
+
+F.Data.Dictionary.Create("TotalQuantities")
+F.Data.Dictionary.SetDefaultReturn("TotalQuantities","-1")
+
+'Calculate ProgPartial
+F.Intrinsic.Math.Div(40,V.DataTable.IssueMat.RowCount,V.Local.fProgPartial)
+
+'Loop through each row of the datatable and perform the needed error checks
+F.Intrinsic.Control.For(V.Local.iCount,0,V.DataTable.IssueMat.RowCount--,1)
+	'Update Row Number
+	F.Intrinsic.Math.Add(V.Local.iRowNum,1,V.Local.iRowNum)
+	'Split the Job and suffix up
+	F.Intrinsic.String.Split(V.DataTable.IssueMat(V.Local.iCount).JobSuffix!FieldVal,"-",V.Local.sTemp)
+	'Redim variable
+	V.Local.sTemp.RedimPreserve(0,1)
+	V.Local.sJob.Set(V.Local.sTemp(0))
+	V.Local.sSuffix.Set(V.Local.sTemp(1))
+
+	'Check Work Order Exists
+	F.Intrinsic.String.Build("SELECT * FROM V_JOB_HEADER WHERE JOB = '{0}' AND SUFFIX = '{1}'",V.Local.sJob,V.Local.sSuffix,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstJob",V.Local.sSQL)
+
+	F.Intrinsic.Control.If(V.ODBC.con!rstJob.EOF,=,True)
+		'Check for existing errors within the file
+		F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+			F.Intrinsic.String.Build("Record {0}: Job {1}-{2} does not exist within Global Shop Solutions.",V.Local.iRowNum,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+		F.Intrinsic.Control.Else
+			F.Intrinsic.String.Build("{0}{1}Record {2}: Job {3}-{4} does not exist within Global Shop Solutions.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+		F.Intrinsic.Control.EndIf
+		F.ODBC.con!rstJob.Close
+		F.Intrinsic.Control.GoTo("SKIP")
+	F.Intrinsic.Control.EndIf
+
+	F.ODBC.con!rstJob.Close
+
+	'Check Work Order and Part Combination
+	F.Intrinsic.String.Build("SELECT * FROM JOB_OPERATIONS WHERE LMO = 'M' AND JOB = '{0}' AND SUFFIX = '{1}' AND PART = '{2}'",V.Local.sJob,V.Local.sSuffix,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstPart",V.Local.sSQL)
+
+	F.Intrinsic.Control.If(V.ODBC.con!rstPart.EOF,=,True)
+		'Check for existing errors within the file
+		F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+			F.Intrinsic.String.Build("Record {0}: Job {1}-{2} and Part {3} combination does not exist within Global Shop Solutions.",V.Local.iRowNum,V.Local.sJob,V.Local.sSuffix,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sErrorFile)
+		F.Intrinsic.Control.Else
+			F.Intrinsic.String.Build("{0}{1}Record {2}: Job {3}-{4} and Part {5} combination does not exist within Global Shop Solutions.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.Local.sJob,V.Local.sSuffix,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sErrorFile)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		'Set the value for the job sequence
+		F.Data.DataTable.SetValue("IssueMat",V.Local.iCount,"Sequence",V.ODBC.con!rstPart.FieldVal!SEQ)
+	F.Intrinsic.Control.EndIf
+
+	F.ODBC.con!rstPart.Close
+
+	'If called from Issue material screen this check should be skipped
+	F.Intrinsic.Control.If(V.Caller.Hook,<>,28860,"AND",V.Caller.Hook,<>,28862)
+		'Check Work Order is Released
+		F.Intrinsic.String.Build("SELECT * FROM V_JOB_HEADER WHERE JOB = '{0}' AND SUFFIX = '{1}' AND (FLAG_WO_PRTD = 'R' OR FLAG_WO_PRTD = 'X')",V.Local.sJob,V.Local.sSuffix,V.Local.sSQL)
+		F.ODBC.Connection!con.OpenLocalRecordsetRO("rstRelease",V.Local.sSQL)
+
+		F.Intrinsic.Control.If(V.ODBC.con!rstRelease.EOF,=,True)
+			'Check for existing errors within the file
+			F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+				F.Intrinsic.String.Build("Record {0}: Job {1}-{2} is not released.",V.Local.iRowNum,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("{0}{1}Record {2}: Job {3}-{4} is not released.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+
+		F.ODBC.con!rstRelease.Close
+	F.Intrinsic.Control.EndIf
+
+	'If DeKit is being issues then skip the close check
+	F.Intrinsic.Control.If(V.Args.DeKit,=,False)
+		'Check Work Order isn't already Already Closed
+		F.Intrinsic.String.Build("SELECT * FROM V_JOB_HEADER WHERE JOB = '{0}' AND SUFFIX = '{1}' AND DATE_CLOSED = '1900-01-01'",V.Local.sJob,V.Local.sSuffix,V.Local.sSQL)
+		F.ODBC.Connection!con.OpenLocalRecordsetRO("rstClosed",V.Local.sSQL)
+
+		F.Intrinsic.Control.If(V.ODBC.con!rstClosed.EOF,=,True)
+			'Check for existing errors within the file
+			F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+				F.Intrinsic.String.Build("Record {0}: Job {1}-{2} is already closed.",V.Local.iRowNum,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("{0}{1}Record {2}: Job {3}-{4} is already closed.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+
+		F.ODBC.con!rstClosed.Close
+	F.Intrinsic.Control.EndIf
+
+	F.Intrinsic.Control.Label("SKIP")
+
+	'Check Quantity isn't numberic
+	F.Intrinsic.Math.IsNumeric(V.DataTable.IssueMat(V.Local.iCount).IssueQty!FieldVal,V.Local.bNumeric)
+
+	F.Intrinsic.Control.If(V.Local.bNumeric,<>,True)
+		'Check for existing errors within the file
+		F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+			F.Intrinsic.String.Build("Record {0}: Quantity is not numeric.",V.Local.iRowNum,V.Local.sErrorFile)
+		F.Intrinsic.Control.Else
+			F.Intrinsic.String.Build("{0}{1}Record {2}: Quantity is not numeric.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.Local.sErrorFile)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+
+	'Check Quantity in Item Master to ensure there's enough to Issue
+	'Get default Bin for part
+	F.Intrinsic.String.Build("SELECT BIN,QTY_ONHAND,FLAG_LOT FROM INVENTORY_MSTR WHERE PART = '{0}'",V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstBin",V.Local.sSQL)
+
+	'Check total quantity for the part
+	V.Local.sPart.Set(V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim)
+
+	'We need to see if this part is currently in the dictionary
+	F.Intrinsic.Control.If(V.Dictionary.TotalQuantities![V.Local.sPart],=,"-1")
+		'If it isn't in the dictionary we need to add it
+		V.Local.fTotQuant.Set(V.DataTable.IssueMat(V.Local.iCount).IssueQty!FieldVal)
+		F.Data.Dictionary.AddItem("TotalQuantities",V.Local.sPart.Trim,V.Local.fTotQuant,False)
+	F.Intrinsic.Control.Else
+		'Update the total quantity
+		F.Intrinsic.Math.Add(V.DataTable.IssueMat(V.Local.iCount).IssueQty!FieldVal,V.Local.fTotQuant,V.Local.fTotQuant)
+		F.Data.Dictionary.UpdateItem("TotalQuantities",V.Local.sPart.Trim,V.Local.fTotQuant)
+	F.Intrinsic.Control.EndIf
+
+	'There should be a BIN. If not use QTY_ONHAND in inventory master, this check is just a formality
+	F.Intrinsic.Control.If(V.ODBC.con!rstBin.EOF,<>,True)
+		'Check if this part is a lot BIN part
+		F.Intrinsic.Control.If(V.ODBC.con!rstBin.FieldVal!FLAG_LOT,=,"Y")
+			F.Data.DataTable.SetValue("IssueMat",V.Local.iCount,"Bin",V.ODBC.con!rstBin.FieldVal!Bin)
+			F.Intrinsic.String.Build("SELECT QUANTITY FROM V_ITEM_MASTER WHERE PART = '{0}' AND BIN = '{1}'",V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.ODBC.con!rstBin.FieldVal!BIN,V.Local.sSQL)
+			F.ODBC.Connection!con.OpenLocalRecordsetRO("rstQuant",V.Local.sSQL)
+
+			'Check to make sure the quantity was numeric
+			F.Intrinsic.Control.If(V.Local.bNumeric,=,True)
+				F.Intrinsic.Control.If(V.ODBC.con!rstQuant.EOF,<>,True)
+					F.Intrinsic.Control.If(V.DataTable.IssueMat(V.Local.iCount).IssueQty!FieldVal,>,V.ODBC.con!rstQuant.FieldVal!QUANTITY)
+						'Check for existing errors within the file
+						F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+							F.Intrinsic.String.Build("Record {0}: Not enough on hand quantity to issue material {1} for job {2}-{3}.",V.Local.iRowNum,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+						F.Intrinsic.Control.Else
+							F.Intrinsic.String.Build("{0}{1}Record {2}: Not enough on hand quantity to issue material {3} for job {4}-{5}.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+						F.Intrinsic.Control.EndIf				
+					'Check the total to be issued does not exceed what is currently in inventory
+					F.Intrinsic.Control.ElseIf(V.Dictionary.TotalQuantities![V.Local.sPart],>,V.ODBC.con!rstQuant.FieldVal!QUANTITY)
+						F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+							F.Intrinsic.String.Build("Record {0}: Total issuing quantity for part {1} on job {2}-{3} exceeds on hand quantity.",V.Local.iRowNum,V.Local.sPart,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+						F.Intrinsic.Control.Else
+							F.Intrinsic.String.Build("{0}{1}Record {2}: Total issuing quantity for part {3} on job {4}-{5} exceeds on hand quantity.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.Local.sPart,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+						F.Intrinsic.Control.EndIf
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.Else
+					'Check for existing errors within the file
+					F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+						'Check if the bin is blank
+						F.Intrinsic.Control.If(V.ODBC.con!rstBin.FieldValTrim!BIN,=,"")
+							F.Intrinsic.String.Build("Record {0}: No quantity found in blank bin for part {1}.",V.Local.iRowNum,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sErrorFile)
+						F.Intrinsic.Control.Else
+							F.Intrinsic.String.Build("Record {0}: No quantity found in bin {1} for part {2}.",V.Local.iRowNum,V.ODBC.con!rstBin.FieldValTrim!BIN,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sErrorFile)
+						F.Intrinsic.Control.EndIf
+					F.Intrinsic.Control.Else
+						'Check if the bin is blank
+						F.Intrinsic.Control.If(V.ODBC.con!rstBin.FieldValTrim!BIN,=,"")
+							F.Intrinsic.String.Build("{0}{1}Record {2}: No quantity found in blank bin for part {3}.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sErrorFile)
+						F.Intrinsic.Control.Else
+							F.Intrinsic.String.Build("{0}{1}Record {2}: No quantity found in bin {3} for part {4}.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.ODBC.con!rstBin.FieldValTrim!BIN,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sErrorFile)
+						F.Intrinsic.Control.EndIf					
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+
+			F.ODBC.con!rstQuant.Close
+		F.Intrinsic.Control.Else
+			F.Intrinsic.Control.If(V.DataTable.IssueMat(V.Local.iCount).IssueQty!FieldVal,>,V.ODBC.con!rstBin.FieldVal!QTY_ONHAND)
+				'Check for existing errors within the file
+				F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+					F.Intrinsic.String.Build("Record {0}: Not enough on hand quantity to issue material {1} for job {2}-{3}.",V.Local.iRowNum,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+				F.Intrinsic.Control.Else
+					F.Intrinsic.String.Build("{0}{1}Record {2}: Not enough on hand quantity to issue material {3} for job {4}-{5}.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+				F.Intrinsic.Control.EndIf				
+				'Check total to be issued
+			F.Intrinsic.Control.ElseIf(V.Dictionary.TotalQuantities![V.Local.sPart],>,V.ODBC.con!rstBin.FieldVal!QTY_ONHAND)
+				F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,=,"")
+					F.Intrinsic.String.Build("Record {0}: Total issuing quantity for part {1} on job {2}-{3} exceeds on hand quantity.",V.Local.iRowNum,V.Local.sPart,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+				F.Intrinsic.Control.Else
+					F.Intrinsic.String.Build("{0}{1}Record {2}: Total issuing quantity for part {3} on job {4}-{5} exceeds on hand quantity.",V.Local.sErrorFile,V.Ambient.NewLine,V.Local.iRowNum,V.Local.sPart,V.Local.sJob,V.Local.sSuffix,V.Local.sErrorFile)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf	
+	F.Intrinsic.Control.EndIf
+
+	F.ODBC.con!rstBin.Close
+	'Update progress bar
+	F.Intrinsic.Math.Add(V.Global.fProgressValue,V.Local.fProgPartial,V.Global.fProgressValue)
+	Gui.F_Progress.pgbIssue.Value(V.Global.fProgressValue)
+F.Intrinsic.Control.Next(V.Local.iCount)
+
+'Check to see if error file is blank. If not then we need to write the file, open it for viewing, and then close the program.
+F.Intrinsic.Control.If(V.Local.sErrorFile.Trim,<>,"")
+	F.Intrinsic.UI.CloseWaitDialog
+	'Set progress bar to 100 since we're done
+	Gui.F_Progress.pgbIssue.Value(100)
+	'Notify user errors were found, and that the program is exiting
+	F.Intrinsic.UI.Msgbox("There were errors in the Issue Material File. Exiting Program.","Error")
+	'Build Filename
+	F.Intrinsic.String.Build("{0}\Issue_Error_{1}.txt",V.Caller.GlobalDir,V.Caller.User,V.Local.sFile)
+	'Write File
+	F.Intrinsic.File.String2File(V.Local.sFile,V.Local.sErrorFile)
+	F.Intrinsic.Task.ShellExec(V.Caller.Handle,"Open",V.Local.sFile,"","",1)
+	F.Intrinsic.Control.CallSub(f_issue_unload)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Error_Check_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_issue_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.Error_Check.End
+
+Program.Sub.cmdBrowse_Click.Start
+F.Intrinsic.Control.SetErrorHandler("Error_Check_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+Variable.Local.sFile.Declare(String)
+Variable.Local.sDir.Declare(String)
+
+'Build FilePath
+F.Intrinsic.String.Build("{0}\Select File",V.Caller.FilesDir,V.Local.sDir)
+'Prompt user to select file
+Function.Intrinsic.UI.ShowOpenFileDialog("","",Variable.Local.sDir,Variable.Local.sFile)
+'Check to make sure they selected a file.
+F.Intrinsic.Control.If(V.Local.sFile,<>,"***CANCEL***")
+	Gui.F_Issue.txtFile.Text(V.Local.sFile)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Error_Check_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_issue_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdBrowse_Click.End
+
+Program.Sub.Issue_Material.Start
+F.Intrinsic.Control.SetErrorHandler("cmdBrowse_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sPart.Declare(String)
+V.Local.sRev.Declare(String)
+V.Local.sIssueQty.Declare(String)
+V.Local.sJobSuffix.Declare(String)
+V.Local.sBin.Declare(String)
+V.Local.sLoc.Declare(String)
+V.Local.sLot.Declare(String)
+V.Local.sHeat.Declare(String)
+V.Local.sSerial.Declare(String)
+V.Local.sSequence.Declare(String)
+V.Local.sFileName.Declare(String)
+V.Local.sIssueString.Declare(String)
+V.Local.sParam.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.iCount.Declare(Long)
+V.Local.fProgPartial.Declare(Float)
+
+'Calculate Progpartial
+F.Intrinsic.Math.Div(20,V.DataTable.IssueMat.RowCount,V.Local.fProgPartial)
+
+F.Intrinsic.Control.For(V.Local.iCount,0,V.DataTable.IssueMat.RowCount--,1)
+	'Pad the Part Number
+	F.Intrinsic.String.RPad(V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim," ",20,V.Local.sPart)
+	'Get the rev from the padded part
+	F.Intrinsic.String.Right(V.Local.sPart,3,V.Local.sRev)
+	'Pad the location, as of now we aren't using it
+	F.Intrinsic.String.RPad(V.Local.sLoc," ",2,V.Local.sLoc)
+	'Pad the Issue quantity
+	'First we need to split at the decimal
+	F.Intrinsic.String.Split(V.DataTable.IssueMat(V.Local.iCount).IssueQty!FieldVal,".",V.Local.sIssueQty)
+	'Redim the quantity in case there wasn't a decimal
+	V.Local.sIssueQty.RedimPreserve(0,1)
+	'Now pad the whole number
+	F.Intrinsic.String.LPad(V.Local.sIssueQty(0),"0",11,V.Local.sIssueQty(0))
+	'Now pad the decimal value
+	F.Intrinsic.String.RPad(V.Local.sIssueQty(1),"0",4,V.Local.sIssueQty(1))
+	'Combine the two with a decimal
+	F.Intrinsic.String.Join(V.Local.sIssueQty,".",V.Local.sIssueQty)
+	'Get lot,heat,serial
+	F.Intrinsic.String.Build("SELECT LOT,HEAT,SERIAL_NUMBER FROM V_ITEM_MASTER WHERE PART = '{0}' AND LOCATION = '{1}' AND BIN = '{2}'",V.DataTable.IssueMat(V.Local.iCount).PartNumber!FieldValTrim,V.Local.sLoc.Trim,V.DataTable.IssueMat(V.Local.iCount).Bin!FieldValTrim,V.Local.sSQL)
+	F.ODBC.Connection!con.OpenLocalRecordsetRO("rstItem",V.Local.sSQL)
+
+	F.Intrinsic.Control.If(V.ODBC.con!rstItem.EOF,<>,True)
+		V.Local.sLot.Set(V.ODBC.con!rstItem.FieldValTrim!LOT)
+		V.Local.sHeat.Set(V.ODBC.con!rstItem.FieldValTrim!HEAT)
+		V.Local.sSerial.Set(V.ODBC.con!rstItem.FieldValTrim!SERIAL_NUMBER)
+	F.Intrinsic.Control.EndIf
+
+	F.ODBC.con!rstItem.Close
+
+	'Pad the lot
+	F.Intrinsic.String.RPad(V.Local.sLot," ",15,V.Local.sLot)
+	'Pad the Heat
+	F.Intrinsic.String.RPad(V.Local.sHeat," ",15,V.Local.sHeat)
+	'Pad the Serial
+	F.Intrinsic.String.RPad(V.Local.sSerial," ",30,V.Local.sSerial)	
+
+	'Pad the Bin
+	F.Intrinsic.String.RPad(V.DataTable.IssueMat(V.Local.iCount).Bin!FieldValTrim," ",6,V.Local.sBin)
+
+	'We need to get the job and suffix separated
+	F.Intrinsic.String.Split(V.DataTable.IssueMat(V.Local.iCount).JobSuffix!FieldValTrim,"-",V.Local.sJobSuffix)
+	'Pad the Job
+	F.Intrinsic.String.RPad(V.Local.sJobSuffix(0)," ",6,V.Local.sJobSuffix(0))
+	'Pad the suffix
+	F.Intrinsic.String.RPad(V.Local.sJobSuffix(1)," ",3,V.Local.sJobSuffix(1))
+	'Pad the Sequence
+	F.Intrinsic.String.RPad(V.DataTable.IssueMat(V.Local.iCount).Sequence!FieldValTrim," ",6,V.Local.sSequence)
+
+	'Check if we've already got a value. 
+	F.Intrinsic.Control.If(V.Local.sIssueString,=,"")
+		'Build upload issuestring
+		F.Intrinsic.String.Build("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}",V.Local.sPart,V.Local.sRev,V.Local.sLoc,V.Local.sIssueQty,V.Local.sLot,V.Local.sBin,V.Local.sHeat,V.Local.sSerial,V.Local.sJobSuffix(0),V.Local.sJobSuffix(1),V.Local.sSequence,V.Local.sIssueString)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("{0}{1}{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}",V.Local.sIssueString,V.Ambient.NewLine,V.Local.sPart,V.Local.sRev,V.Local.sLoc,V.Local.sIssueQty,V.Local.sLot,V.Local.sBin,V.Local.sHeat,V.Local.sSerial,V.Local.sJobSuffix(0),V.Local.sJobSuffix(1),V.Local.sSequence,V.Local.sIssueString)
+	F.Intrinsic.Control.EndIf
+
+	'Update Progress bar
+	F.Intrinsic.Math.Add(V.Global.fProgressValue,V.Local.fProgPartial,V.Global.fProgressValue)
+	Gui.F_Progress.pgbIssue.Value(V.Global.fProgressValue)
+F.Intrinsic.Control.Next(V.Local.iCount)
+
+'Build filename
+F.Intrinsic.String.Build("{0}\Z{1}ISSMAT{2}",V.Caller.FilesDir,V.Caller.CompanyCode,V.Caller.Terminal,V.Local.sFileName)
+'Write the file
+F.Intrinsic.File.String2File(V.Local.sFileName,V.Local.sIssueString)
+'Build parameters
+F.Intrinsic.String.Build("Z{0}ISSMAT{1}!*!{2}!*!NS",V.Caller.CompanyCode,V.Caller.Terminal,V.Local.sIssueString,V.Local.sParam)
+'Call Issue Material Callwrapper
+F.Global.General.CallWrapperSync(450100,V.Local.sParam)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdBrowse_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_issue_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.Issue_Material.End
+
+Program.Sub.Load_Materials.Start
+F.Intrinsic.Control.SetErrorHandler("Issue_Material_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.iRowCount.Declare(Long)
+V.Local.iCount.Declare(Long)
+V.Local.sRow.Declare(String)
+V.Local.sData.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.sPart.Declare(String)
+V.Local.sMessage.Declare(String)
+V.Local.fProgPartial.Declare(Float)
+V.Local.sPartList.Declare(String)
+V.Local.bExists.Declare(Boolean)
+
+'Show progress bar
+Gui.F_Progress..Show
+'Show wait dialog
+F.Intrinsic.UI.InvokeWaitDialog("Loading File Information....")
+'Load BDF into memory, no need to clone since we are just reading
+F.Intrinsic.BDF.Load("AUX001","AUX001")
+F.Intrinsic.BDF.ReadRowCount("AUX001",V.Local.iRowCount)
+'Calculate the partial progress values
+F.Intrinsic.Math.Div(40,V.Local.iRowCount,V.Local.fProgPartial)
+'Subtract 1 from the row count
+F.Intrinsic.Math.Sub(V.Local.iRowCount,1,V.Local.iRowCount)
+
+'Loop through each row in the BDF
+F.Intrinsic.Control.For(V.Local.iCount,0,V.Local.iRowCount,1)
+	'Read row of BDF
+	F.Intrinsic.BDF.ReadRow("AUX001",V.Local.iCount,V.Local.sRow)
+	'Split the row
+	F.Intrinsic.String.Split(V.Local.sRow,"|~|",V.Local.sRow)
+	'Being adding values to the data string to load into the Datatable
+	'First lets check which hook we are calling from. If calling from script 2, we need to exclude tower parts
+	F.Intrinsic.Control.If(V.Caller.Hook,=,28862)
+		F.Intrinsic.String.Build("SELECT BIN FROM GCG_4226_TOWER_BIN WHERE BIN = '{0}'",V.Local.sRow(6).Trim,V.Local.sSQL)
+		F.ODBC.Connection!con.OpenLocalRecordsetRO("rstBin",V.Local.sSQL)
+
+		'If this part is a tower part, then we need to skip it
+		F.Intrinsic.Control.If(V.ODBC.con!rstBin.EOF,<>,True)
+			F.ODBC.con!rstBin.Close
+			F.Intrinsic.Control.GoTo("Skip")
+		F.Intrinsic.Control.EndIf
+
+		F.ODBC.con!rstBin.Close
+	F.Intrinsic.Control.EndIf
+
+	'Build the GSS part
+	F.Intrinsic.String.GSSPartString(V.Local.sRow(1),V.Local.sRow(2),V.Local.sPart)
+
+	'Check to make sure that the On hand quantity is >= the quantity to be issued, if not build list and skip
+	F.Intrinsic.Control.If(V.Local.sRow(7),<,V.Local.sRow(8))
+		F.Intrinsic.String.IsInString(V.Local.sPartList,V.Local.sPart,True,V.Local.bExists)
+
+		'If it's not in the string then we can add it
+		F.Intrinsic.Control.If(V.Local.bExists,=,False)
+			F.Intrinsic.Control.If(V.Local.sPartList.Trim,=,"")
+				F.Intrinsic.String.Build("Not enough on hand quantity for part {0}.",V.Local.sPart,V.Local.sPartList)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("{0}{1}Not enough on hand quantity for part {2}.",V.Local.sPartList,V.Ambient.NewLine,V.Local.sPartList)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.EndIf
+
+		F.Intrinsic.Control.GoTo("Skip")
+	F.Intrinsic.Control.EndIf
+
+	'Now we can build the file
+	F.Intrinsic.Control.If(V.Local.sData.Trim,=,"")
+		F.Intrinsic.String.Build("{0},{1},{2}-{3},{4},{5}",V.Local.sPart,V.Local.sRow(8),V.Passed.000002,V.Passed.000003,V.Local.sRow(6),V.Local.sRow(5),V.Local.sData)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("{0}{1}{2},{3},{4}-{5},{6},{7}",V.Local.sData,V.Ambient.NewLine,V.Local.sPart,V.Local.sRow(8),V.Passed.000002,V.Passed.000003,V.Local.sRow(6),V.Local.sRow(5),V.Local.sData)
+	F.Intrinsic.Control.EndIf
+
+	F.Intrinsic.Control.Label("Skip")
+	'Update progress bar
+	F.Intrinsic.Math.Add(V.Global.fProgressValue,V.Local.fProgPartial,V.Global.fProgressValue)
+	Gui.F_Progress.pgbIssue.Value(V.Global.fProgressValue)
+F.Intrinsic.Control.Next(V.Local.iCount)
+
+'Check to make sure we have data
+F.Intrinsic.Control.If(V.Local.sData.Trim,=,"")
+	F.Intrinsic.UI.Msgbox("No parts to issue. Closing program.")
+	F.Intrinsic.Control.CallSub(f_issue_unload)
+F.Intrinsic.Control.EndIf
+
+'Create DataTable
+F.Data.DataTable.CreateFromString("IssueMat",V.Local.sData,"PartNumber*!*IssueQty*!*JobSuffix*!*Bin*!*Sequence","String*!*String*!*String*!*String*!*String",",",V.Ambient.NewLine,True)
+
+'Update wait dialog
+F.Intrinsic.UI.ChangeWaitStatus("Checking File For Errors....")
+'Now we need to check the file for any errors, if any exist no work will be done
+F.Intrinsic.Control.CallSub(error_check,"DeKit",False)
+'Update wait dialog
+F.Intrinsic.UI.ChangeWaitStatus("Issuing Material....")
+
+'Now that we know there are no errors in the file, we can issue our material to the job
+F.Intrinsic.Control.CallSub(Issue_Material)
+'Close wait dialog
+F.Intrinsic.UI.CloseWaitDialog
+'Show which parts don't have enough on hand quantity to issue
+F.Intrinsic.Control.If(V.Local.sPartList.Trim,<>,"")
+	F.Intrinsic.UI.MsgBoxExt("Parts Not Issued",V.Local.sPartList)
+F.Intrinsic.Control.EndIf
+
+'inform user it was successful
+F.Intrinsic.UI.Msgbox("Materials have been successfully issued")
+
+'Material has been issued, close the program
+F.Intrinsic.Control.CallSub(f_issue_unload)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Issue_Material_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(f_issue_unload)
+Function.Intrinsic.Control.EndIf
+Program.Sub.Load_Materials.End
+
+Program.Sub.F_Issue_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("F_Issue_UnLoad_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+F.ODBC.Connection!con.Close
+
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("F_Issue_UnLoad_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+
+Function.Intrinsic.Control.EndIf
+Program.Sub.F_Issue_UnLoad.End
+
+Program.Sub.cmdNO_Click.Start
+F.Intrinsic.Control.SetErrorHandler("AreYouSureForm_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'close the message and make the user reselect
+gui.FormSure..Visible(false)
+f.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("AreYouSureForm_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(f_issue_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdNO_Click.End
+
+Program.Sub.cmdYes_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdNO_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'close the message and continue
+gui.FormSure..Visible(false)
+f.Intrinsic.Control.CallSub(cmdissue_click)
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdNO_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(f_issue_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdYes_Click.End
+
+Program.Sub.AreYouSureForm.Start
+F.Intrinsic.Control.SetErrorHandler("AreYouSureForm_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'Check to make sure the user does want to issue tower parts as well
+gui.FormSure..Visible(true)
+
+gui.FormSure.cmdNO.SetFocus
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("AreYouSureForm_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4464_Issue_Tower_Parts.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(f_issue_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.AreYouSureForm.End
+
+Program.Sub.Comments.Start
+${$0$}$Issue Tower Parts$}$BCC$}$9/26/2016 5:25:30 PM$}$False
+${$3$}$0$}$$}$0$}$-1$}$$}$12:00:00 AM$}$This custom project will allow the user to issue material to jobs based on an exported comma delimited text file from a MyData machine. They user will have the option of either issuing all the material in the document, or only those Tower Parts. The issue material screen will also be updated such that the Issue All button will be disabled, and in it's place a new issue all button, along with an Issue All Non Tower Parts Button.
+Program.Sub.Comments.End
